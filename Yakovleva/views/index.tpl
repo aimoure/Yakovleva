@@ -31,7 +31,7 @@
 
 <h3> Ask a Question </h3>
 <form action="/home" method="post">
-        <p><textarea rows="2" cols="50" name="QUEST" placeholder="Your question"></textarea></p> 
+        <p><textarea rows="2" cols="50" name="QUEST" placeholder="Your question" style="resize: none;"></textarea></p> 
         <p><input type="text" size="50" name="ADRESS" placeholder="Your email"></p>
-        <p><a class="btn btn-default">Send</a></p>
+        <p><a class="btn btn-default"><input type="submit" value="Send"></a></p>
 </form>
