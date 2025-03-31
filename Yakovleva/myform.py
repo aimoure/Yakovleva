@@ -9,7 +9,7 @@ def my_form():
     mail = request.forms.get('ADRESS')
     name = request.forms.get('USERNAME')
     quest = request.forms.get('QUEST')  
-    questions[mail] = quest
+    questions[mail] = [name, quest]
     pdb.set_trace()
 
     reg = r'^[a-zA-Z0-9]{2,}@[a-z]{2,}\.[a-z]{2,}$'
