@@ -29,8 +29,6 @@
     </div>
 </div>
 
-error_message = ""
-
 <h3> Ask a Question </h3>
 <form action="/home" method="post">
         <p><textarea rows="2" cols="50" name="QUEST" placeholder="Your question" style="resize: none;"></textarea></p> 

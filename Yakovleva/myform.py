@@ -1,12 +1,16 @@
 from datetime import datetime
 from bottle import post, request, redirect
 import re
+import pdb
 
 @post('/home', method='post')
 def my_form():
+    questions = {}
     mail = request.forms.get('ADRESS')
     name = request.forms.get('USERNAME')
-    quest = request.forms.get('QUEST')    
+    quest = request.forms.get('QUEST')  
+    questions[mail] = quest
+    pdb.set_trace()
 
     reg = r'^[a-zA-Z0-9]{2,}@[a-z]{2,}\.[a-z]{2,}$'
 
