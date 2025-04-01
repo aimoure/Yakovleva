@@ -33,20 +33,27 @@ def my_form():
         return error
     else:
         try:
-            flag = 0
+            is_exist_u = 0
+            is_exist_q = 0
             # Открываем файл для чтения
             with open('static/json/questions.json', 'r') as file:
                 questions_from_file = json.load(file)
                 for q in question.keys(): # Проходимся по всем ключам из словаря (почтам)
                     for q_f in questions_from_file.keys():
                         if q == q_f: # Ищем совпадения
-                            flag = 1
-                            if questions_from_file[q][1] != question[q][1]:
-                                questions_from_file[q].append(question[q][1])
+                            is_exist_u = 1
+                            if questions_from_file[q][0] != question[q][0]:
+                                return "Thanks, %s! Unfortunately, this account has another name. Access Date: %s" % (name, datetime.now().strftime("%d-%m-%Y"))
                             else:
-                                return "Thanks, %s! Unfortunately, You've already asked this question. Access Date: %s" % (name, datetime.now().strftime("%d-%m-%Y"))
-            
-            if flag == 0:
+                                for q_f_q in questions_from_file[q]:
+                                    if q_f_q == question[q][1]:
+                                        is_exist_q = 1
+                                        return "Thanks, %s! Unfortunately, You've already asked this question. Access Date: %s" % (name, datetime.now().strftime("%d-%m-%Y"))
+                         
+            if is_exist_q == 0:
+                questions_from_file[q].append(question[q][1])
+
+            if is_exist_u == 0:
                 questions_from_file.update(question)
 
             # Открываем файл для записи
