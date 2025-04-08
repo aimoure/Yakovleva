@@ -7,58 +7,66 @@ import json
 @post('/home', method='post')
 def my_form():
     question = {}
+    # pdb.set_trace()
     mail = request.forms.get('ADRESS')
     name = request.forms.get('USERNAME')
     quest = request.forms.get('QUEST')  
-    question[mail] = [name, quest]
-    # pdb.set_trace()
+    question[mail] = [name, quest] # словарь с данными текущего пользователя
+    # pdb.exit()
 
-    reg = r'^[a-zA-Z0-9]{2,}@[a-z]{2,}\.[a-z]{2,}$'
+    reg = r'^[a-zA-Z0-9]{2,}@[a-z]{2,}\.[a-z]{2,}$' # Регулярное выражение для проверки почты
 
-    error = ""
+    error = "" # Переменная для записи сообщений об ошибке
 
+    # Проверка заполненности полей
     if len(quest) < 1 or len(mail) < 1 or len(name) < 1:
         error += "All fields must be filled in. "
 
-    if len(quest) < 4 or quest.isdigit():
+    # Проверка вопроса
+    filtered_quest = ''.join(c for c in quest if c.isalnum())  # Только буквы и цифры
+
+    if len(filtered_quest) < 4 or quest.strip() == "" or quest.isdigit():
         error += "The question is incorrect. "
 
+    # Проверка почты
     if (len(mail) < 8 or len(mail) > 255 or not re.match(reg, mail)) and len(mail) > 0: 
         error += "Mail entered incorrectly. "
 
+    # Проверка имени
     if not re.match(r'^[a-zA-Z]+$', name) and len(name) > 0:
         error += "Name entered incorrectly. "
 
+    # При наличии ошибок, вывод информации о них и завершение программы
     if len(error) > 0:
         return error
     else:
         try:
-            is_exist_u = 0
-            is_exist_q = 0
+            is_exist_u = 0 # Существует ли пользователь в словаре
+            is_exist_q = 0 # Существуетли вопрос в словаре
             # Открываем файл для чтения
             with open('static/json/questions.json', 'r') as file:
                 questions_from_file = json.load(file)
-                for q in question.keys(): # Проходимся по всем ключам из словаря (почтам)
-                    for q_f in questions_from_file.keys():
-                        if q == q_f: # Ищем совпадения
-                            is_exist_u = 1
-                            if questions_from_file[q][0] != question[q][0]:
-                                return "Thanks, %s! Unfortunately, this account has another name. Access Date: %s" % (name, datetime.now().strftime("%d-%m-%Y"))
-                            else:
-                                for q_f_q in questions_from_file[q]:
-                                    if q_f_q == question[q][1]:
-                                        is_exist_q = 1
-                                        return "Thanks, %s! Unfortunately, You've already asked this question. Access Date: %s" % (name, datetime.now().strftime("%d-%m-%Y"))
+                for mail_from_file in questions_from_file.keys(): # Проходимся по всем ключам из словаря (почтам)
+                    if mail == mail_from_file: # Ищем совпадения почты текущего пользователя и почты из файла
+                        is_exist_u = 1
+                        if questions_from_file[mail][0] != question[mail][0]: # Проверка сопадения имени пользователя
+                            return "Thanks, %s! Unfortunately, this account has another name. Access Date: %s" % (name, datetime.now().strftime("%d-%m-%Y"))
+                        else:
+                            for user_questions in questions_from_file[mail]: # Цикл по всем вопросам текущего пользователя в файле
+                                if user_questions == question[mail][1]: # Если текущий вопрос совпадает с тем что уже есть в списке - ошибка
+                                    is_exist_q = 1
+                                    return "Thanks, %s! Unfortunately, You've already asked this question. Access Date: %s" % (name, datetime.now().strftime("%d-%m-%Y"))
                          
-            if is_exist_q == 0:
-                questions_from_file[q].append(question[q][1])
+            if is_exist_q == 0: # Если вопрос уникальный
+                questions_from_file[mail].append(question[mail][1])
 
-            if is_exist_u == 0:
+            if is_exist_u == 0: # Если пользователя такого еще нет в списке, то добавляется
                 questions_from_file.update(question)
 
             # Открываем файл для записи
             with open('static/json/questions.json', 'w') as file:
                 json.dump(questions_from_file, file, indent=4)
+
         except FileNotFoundError:
             print("Файл не найден")
         except json.JSONDecodeError:
