@@ -4,6 +4,8 @@ import re
 import pdb
 import json
 
+reg = r'^(?=.{8,256}$)[a-zA-Z][a-zA-Z0-9]{1,63}@[a-z]{2,63}\.[a-z]{2,63}(?:\.[a-z]{2,63})?$' # Регулярное выражение для проверки почты
+
 @post('/home', method='post')
 def my_form():
     question = {}
@@ -13,8 +15,6 @@ def my_form():
     quest = request.forms.get('QUEST')  
     question[mail] = [name, quest] # словарь с данными текущего пользователя
     # pdb.exit()
-
-    reg = r'^(?=.{8,256}$)[a-zA-Z][a-zA-Z0-9]{1,63}@[a-z]{2,63}\.[a-z]{2,63}(?:\.[a-z]{2,63})?$' # Регулярное выражение для проверки почты
 
     error = "" # Переменная для записи сообщений об ошибке
 
